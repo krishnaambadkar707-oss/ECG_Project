@@ -3,7 +3,6 @@ import io
 import pandas as pd
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
@@ -128,9 +127,10 @@ async def upload_csv(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error parsing CSV file: {str(e)}")
 
-# Mount frontend static files at root so /css/*, /js/*, and / all resolve correctly.
-# html=True serves index.html for the root route automatically.
-# This MUST be the last mount so /api/* routes take priority.
-frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
-if os.path.exists(frontend_dir):
-    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+# Static file serving:
+# - In production (Vercel), static files are served by Vercel's routing layer (vercel.json).
+# - In local dev, run_server.py or direct uvicorn can mount static files if needed.
+# To enable local static serving, uncomment the lines below:
+# frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+# if os.path.exists(frontend_dir):
+#     app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")

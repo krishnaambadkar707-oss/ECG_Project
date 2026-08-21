@@ -11,6 +11,13 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from backend.app import app
 
+# Mount frontend static files for local development
+# (In production on Vercel, static files are served by Vercel's routing layer)
+from fastapi.staticfiles import StaticFiles
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "frontend"))
+if os.path.exists(frontend_dir):
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+
 def wait_and_open_browser():
     url = "http://localhost:8000"
     print(f"Waiting for server to start on {url}...")
